@@ -5,15 +5,14 @@ def display_menu():
     """Display the dice selection menu."""
     print("\n=== Dice Roller ===")
     print("Select a die to roll:")
-    print("1. D4 (4-sided die)")
-    print("2. D6 (6-sided die)")
-    print("3. D8 (8-sided die)")
-    print("4. D10 (10-sided die)")
-    print("5. D12 (12-sided die)")
-    print("6. D20 (20-sided die)")
-    print("7. D100 (100-sided die)")
-    print("8. Quit")
-    print("\nOr enter dice notation (e.g., 2d6, 5d20)")
+    print()
+    print("┌─────────┬─────────┬─────────┬─────────┬─────────┐")
+    print("│  1. D4  │  2. D6  │  3. D8  │ 4. D10  │ 5. D12  │")
+    print("├─────────┼─────────┼─────────┼─────────┼─────────┤")
+    print("│ 6. D20  │ 7. D100 │         │         │ 8. Quit │")
+    print("└─────────┴─────────┴─────────┴─────────┴─────────┘")
+    print()
+    print("Or enter dice notation (e.g., 2d6, 5d20)")
     print("==================")
 
 def roll_die(sides, count=1):
@@ -68,7 +67,6 @@ def main():
             die_name = f"D{sides}"
             results = roll_die(sides, count)
             display_roll_results(die_name, count, results)
-            input("\nPress Enter to continue...")
         elif choice in dice_types:
             die_name, sides = dice_types[choice]
 
@@ -86,10 +84,8 @@ def main():
 
             results = roll_die(sides, count)
             display_roll_results(die_name, count, results)
-            input("\nPress Enter to continue...")
         else:
             print("\n❌ Invalid choice! Please select a number between 1 and 8 or use dice notation (e.g., 2d6).")
-            input("\nPress Enter to continue...")
 
 if __name__ == "__main__":
     main()
