@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dice Roller</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .dice-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .dice-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            padding: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .dice-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .dice-button:active {
+            transform: translateY(0);
+        }
+
+        .notation-section {
+            margin-bottom: 30px;
+        }
+
+        .notation-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .notation-input-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .notation-input {
+            padding: 12px 20px;
+            font-size: 1.1em;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            width: 200px;
+            text-align: center;
+        }
+
+        .roll-button {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            padding: 12px 30px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .roll-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .results-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            min-height: 150px;
+            display: none;
+        }
+
+        .results-section.show {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .results-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .roll-info {
+            font-size: 1.2em;
+            color: #495057;
+            margin-bottom: 15px;
+        }
+
+        .results-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .die-result {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-size: 1.3em;
+            font-weight: bold;
+            min-width: 60px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            animation: pop 0.3s ease-out;
+        }
+
+        @keyframes pop {
+            0% {
+                transform: scale(0);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .total {
+            font-size: 1.4em;
+            color: #f5576c;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .count-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .count-input {
+            padding: 8px 15px;
+            font-size: 1em;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            width: 80px;
+            text-align: center;
+        }
+
+        .count-label {
+            font-size: 1em;
+            color: #495057;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-content h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .modal-button.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .modal-button.secondary {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .modal-button:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎲 Dice Roller</h1>
+
+        <div class="dice-grid">
+            <button class="dice-button" onclick="selectDie(4)">D4</button>
+            <button class="dice-button" onclick="selectDie(6)">D6</button>
+            <button class="dice-button" onclick="selectDie(8)">D8</button>
+            <button class="dice-button" onclick="selectDie(10)">D10</button>
+            <button class="dice-button" onclick="selectDie(12)">D12</button>
+            <button class="dice-button" onclick="selectDie(20)">D20</button>
+            <button class="dice-button" onclick="selectDie(100)">D100</button>
+        </div>
+
+        <div class="notation-section">
+            <h3>Or use dice notation</h3>
+            <div class="notation-input-group">
+                <input type="text" class="notation-input" id="notationInput" placeholder="e.g., 2d6, 5d20" onkeypress="handleNotationEnter(event)">
+                <button class="roll-button" onclick="rollFromNotation()">Roll</button>
+            </div>
+        </div>
+
+        <div class="results-section" id="resultsSection">
+            <h3 id="rollTitle"></h3>
+            <div class="roll-info" id="rollInfo"></div>
+            <div class="results-list" id="resultsList"></div>
+            <div class="total" id="totalDisplay"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="countModal">
+        <div class="modal-content">
+            <h3>How many dice?</h3>
+            <div class="count-input-group">
+                <span class="count-label">Number of dice:</span>
+                <input type="number" class="count-input" id="countInput" min="1" value="1" onkeypress="handleCountEnter(event)">
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-button secondary" onclick="closeModal()">Cancel</button>
+                <button class="modal-button primary" onclick="rollDice()">Roll</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedDie = null;
+
+        function selectDie(sides) {
+            selectedDie = sides;
+            document.getElementById('countInput').value = 1;
+            showModal();
+        }
+
+        function showModal() {
+            document.getElementById('countModal').classList.add('show');
+            document.getElementById('countInput').focus();
+        }
+
+        function closeModal() {
+            document.getElementById('countModal').classList.remove('show');
+        }
+
+        function handleCountEnter(event) {
+            if (event.key === 'Enter') {
+                rollDice();
+            }
+        }
+
+        function handleNotationEnter(event) {
+            if (event.key === 'Enter') {
+                rollFromNotation();
+            }
+        }
+
+        function rollDice() {
+            const count = parseInt(document.getElementById('countInput').value);
+
+            if (count < 1 || isNaN(count)) {
+                alert('Please enter a valid number of dice (at least 1)');
+                return;
+            }
+
+            closeModal();
+            performRoll(selectedDie, count);
+        }
+
+        function rollFromNotation() {
+            const notation = document.getElementById('notationInput').value.trim().toLowerCase();
+            const match = notation.match(/^(\d+)d(\d+)$/);
+
+            if (!match) {
+                alert('Invalid dice notation. Use format like "2d6" or "5d20"');
+                return;
+            }
+
+            const count = parseInt(match[1]);
+            const sides = parseInt(match[2]);
+
+            if (count < 1 || sides < 1) {
+                alert('Count and sides must be positive numbers');
+                return;
+            }
+
+            performRoll(sides, count);
+            document.getElementById('notationInput').value = '';
+        }
+
+        function performRoll(sides, count) {
+            const results = [];
+            for (let i = 0; i < count; i++) {
+                results.push(Math.floor(Math.random() * sides) + 1);
+            }
+
+            displayResults(sides, count, results);
+        }
+
+        function displayResults(sides, count, results) {
+            const resultsSection = document.getElementById('resultsSection');
+            const rollTitle = document.getElementById('rollTitle');
+            const rollInfo = document.getElementById('rollInfo');
+            const resultsList = document.getElementById('resultsList');
+            const totalDisplay = document.getElementById('totalDisplay');
+
+            rollTitle.textContent = `Rolling ${count}x D${sides}`;
+            rollInfo.textContent = `Results:`;
+
+            resultsList.innerHTML = '';
+            results.forEach((result, index) => {
+                const dieElement = document.createElement('div');
+                dieElement.className = 'die-result';
+                dieElement.textContent = result;
+                dieElement.style.animationDelay = `${index * 0.05}s`;
+                resultsList.appendChild(dieElement);
+            });
+
+            if (count > 1) {
+                const total = results.reduce((sum, val) => sum + val, 0);
+                totalDisplay.textContent = `Total: ${total}`;
+                totalDisplay.style.display = 'block';
+            } else {
+                totalDisplay.style.display = 'none';
+            }
+
+            resultsSection.classList.remove('show');
+            setTimeout(() => {
+                resultsSection.classList.add('show');
+            }, 10);
+        }
+    </script>
+</body>
+</html>
