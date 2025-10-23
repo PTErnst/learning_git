@@ -21,13 +21,129 @@
             padding: 20px;
         }
 
+        .main-wrapper {
+            display: flex;
+            gap: 20px;
+            max-width: 1200px;
+            width: 100%;
+            align-items: flex-start;
+        }
+
         .container {
             background: white;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             padding: 40px;
-            max-width: 800px;
-            width: 100%;
+            flex: 1;
+        }
+
+        .history-panel {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            width: 300px;
+            max-height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .history-panel h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            text-align: center;
+        }
+
+        .history-list {
+            overflow-y: auto;
+            flex: 1;
+            padding-right: 10px;
+        }
+
+        .history-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .history-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .history-list::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+        }
+
+        .history-list::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+
+        .history-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+            transition: transform 0.2s;
+        }
+
+        .history-item:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .history-item-header {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .history-item-results {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 8px;
+        }
+
+        .history-die {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .history-item-total {
+            color: #f5576c;
+            font-weight: bold;
+            font-size: 1em;
+        }
+
+        .clear-history {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            padding: 10px 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: transform 0.2s;
+        }
+
+        .clear-history:hover {
+            transform: translateY(-2px);
+        }
+
+        .empty-history {
+            text-align: center;
+            color: #adb5bd;
+            padding: 40px 20px;
+            font-style: italic;
         }
 
         h1 {
@@ -207,6 +323,60 @@
             color: #495057;
         }
 
+        .options-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .options-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .checkbox-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox-option input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .checkbox-option label {
+            font-size: 1em;
+            color: #495057;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .option-description {
+            font-size: 0.85em;
+            color: #6c757d;
+            margin-left: 30px;
+            margin-top: -5px;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .exploded-indicator {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.7em;
+            margin-left: 3px;
+            vertical-align: super;
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -272,32 +442,53 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🎲 Dice Roller</h1>
+    <div class="main-wrapper">
+        <div class="container">
+            <h1>🎲 Dice Roller</h1>
 
-        <div class="dice-grid">
-            <button class="dice-button" onclick="selectDie(4)">D4</button>
-            <button class="dice-button" onclick="selectDie(6)">D6</button>
-            <button class="dice-button" onclick="selectDie(8)">D8</button>
-            <button class="dice-button" onclick="selectDie(10)">D10</button>
-            <button class="dice-button" onclick="selectDie(12)">D12</button>
-            <button class="dice-button" onclick="selectDie(20)">D20</button>
-            <button class="dice-button" onclick="selectDie(100)">D100</button>
-        </div>
+            <div class="dice-grid">
+                <button class="dice-button" onclick="selectDie(4)">D4</button>
+                <button class="dice-button" onclick="selectDie(6)">D6</button>
+                <button class="dice-button" onclick="selectDie(8)">D8</button>
+                <button class="dice-button" onclick="selectDie(10)">D10</button>
+                <button class="dice-button" onclick="selectDie(12)">D12</button>
+                <button class="dice-button" onclick="selectDie(20)">D20</button>
+                <button class="dice-button" onclick="selectDie(100)">D100</button>
+            </div>
 
-        <div class="notation-section">
-            <h3>Or use dice notation</h3>
-            <div class="notation-input-group">
-                <input type="text" class="notation-input" id="notationInput" placeholder="e.g., 2d6, 5d20" onkeypress="handleNotationEnter(event)">
-                <button class="roll-button" onclick="rollFromNotation()">Roll</button>
+            <div class="options-section">
+                <h3>Options</h3>
+                <div class="checkbox-option">
+                    <input type="checkbox" id="explodingDice" name="explodingDice">
+                    <label for="explodingDice">Exploding Dice (Open-Ended)</label>
+                </div>
+                <div class="option-description">
+                    When a die rolls its maximum value, it "explodes" - roll it again and add to the total. Keep rolling as long as you hit the max!
+                </div>
+            </div>
+
+            <div class="notation-section">
+                <h3>Or use dice notation</h3>
+                <div class="notation-input-group">
+                    <input type="text" class="notation-input" id="notationInput" placeholder="e.g., 2d6, 5d20" onkeypress="handleNotationEnter(event)">
+                    <button class="roll-button" onclick="rollFromNotation()">Roll</button>
+                </div>
+            </div>
+
+            <div class="results-section" id="resultsSection">
+                <h3 id="rollTitle"></h3>
+                <div class="roll-info" id="rollInfo"></div>
+                <div class="results-list" id="resultsList"></div>
+                <div class="total" id="totalDisplay"></div>
             </div>
         </div>
 
-        <div class="results-section" id="resultsSection">
-            <h3 id="rollTitle"></h3>
-            <div class="roll-info" id="rollInfo"></div>
-            <div class="results-list" id="resultsList"></div>
-            <div class="total" id="totalDisplay"></div>
+        <div class="history-panel">
+            <h2>Roll History</h2>
+            <div class="history-list" id="historyList">
+                <div class="empty-history">No rolls yet. Start rolling!</div>
+            </div>
+            <button class="clear-history" onclick="clearHistory()">Clear History</button>
         </div>
     </div>
 
@@ -317,6 +508,7 @@
 
     <script>
         let selectedDie = null;
+        let rollHistory = [];
 
         function selectDie(sides) {
             selectedDie = sides;
@@ -378,30 +570,66 @@
             document.getElementById('notationInput').value = '';
         }
 
-        function performRoll(sides, count) {
-            const results = [];
-            for (let i = 0; i < count; i++) {
-                results.push(Math.floor(Math.random() * sides) + 1);
-            }
+        function rollSingleDie(sides, exploding = false) {
+            let total = 0;
+            let rolls = [];
+            let currentRoll;
 
-            displayResults(sides, count, results);
+            do {
+                currentRoll = Math.floor(Math.random() * sides) + 1;
+                rolls.push(currentRoll);
+                total += currentRoll;
+            } while (exploding && currentRoll === sides);
+
+            return { total, rolls };
         }
 
-        function displayResults(sides, count, results) {
+        function performRoll(sides, count) {
+            const exploding = document.getElementById('explodingDice').checked;
+            const results = [];
+            const detailedResults = [];
+
+            for (let i = 0; i < count; i++) {
+                if (exploding) {
+                    const dieResult = rollSingleDie(sides, true);
+                    results.push(dieResult.total);
+                    detailedResults.push(dieResult.rolls);
+                } else {
+                    const roll = Math.floor(Math.random() * sides) + 1;
+                    results.push(roll);
+                    detailedResults.push([roll]);
+                }
+            }
+
+            displayResults(sides, count, results, detailedResults, exploding);
+            addToHistory(sides, count, results, detailedResults, exploding);
+        }
+
+        function displayResults(sides, count, results, detailedResults, exploding) {
             const resultsSection = document.getElementById('resultsSection');
             const rollTitle = document.getElementById('rollTitle');
             const rollInfo = document.getElementById('rollInfo');
             const resultsList = document.getElementById('resultsList');
             const totalDisplay = document.getElementById('totalDisplay');
 
-            rollTitle.textContent = `Rolling ${count}x D${sides}`;
+            const modeText = exploding ? ' (Exploding)' : '';
+            rollTitle.textContent = `Rolling ${count}x D${sides}${modeText}`;
             rollInfo.textContent = `Results:`;
 
             resultsList.innerHTML = '';
             results.forEach((result, index) => {
                 const dieElement = document.createElement('div');
                 dieElement.className = 'die-result';
-                dieElement.textContent = result;
+
+                if (exploding && detailedResults[index].length > 1) {
+                    // Show the breakdown for exploded dice
+                    const breakdown = detailedResults[index].join('+');
+                    dieElement.innerHTML = `${result}<span class="exploded-indicator">💥</span>`;
+                    dieElement.title = `Rolls: ${breakdown}`;
+                } else {
+                    dieElement.textContent = result;
+                }
+
                 dieElement.style.animationDelay = `${index * 0.05}s`;
                 resultsList.appendChild(dieElement);
             });
@@ -418,6 +646,79 @@
             setTimeout(() => {
                 resultsSection.classList.add('show');
             }, 10);
+        }
+
+        function addToHistory(sides, count, results, detailedResults, exploding) {
+            const total = results.reduce((sum, val) => sum + val, 0);
+            rollHistory.unshift({
+                sides: sides,
+                count: count,
+                results: results,
+                detailedResults: detailedResults,
+                exploding: exploding,
+                total: total,
+                timestamp: new Date()
+            });
+
+            updateHistoryDisplay();
+        }
+
+        function updateHistoryDisplay() {
+            const historyList = document.getElementById('historyList');
+
+            if (rollHistory.length === 0) {
+                historyList.innerHTML = '<div class="empty-history">No rolls yet. Start rolling!</div>';
+                return;
+            }
+
+            historyList.innerHTML = '';
+            rollHistory.forEach((roll, index) => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+
+                const header = document.createElement('div');
+                header.className = 'history-item-header';
+                const modeText = roll.exploding ? ' 💥' : '';
+                header.textContent = `${roll.count}x D${roll.sides}${modeText}`;
+
+                const resultsDiv = document.createElement('div');
+                resultsDiv.className = 'history-item-results';
+                roll.results.forEach((result, idx) => {
+                    const dieSpan = document.createElement('span');
+                    dieSpan.className = 'history-die';
+
+                    if (roll.exploding && roll.detailedResults[idx].length > 1) {
+                        const breakdown = roll.detailedResults[idx].join('+');
+                        dieSpan.innerHTML = `${result} 💥`;
+                        dieSpan.title = `Rolls: ${breakdown}`;
+                    } else {
+                        dieSpan.textContent = result;
+                    }
+
+                    resultsDiv.appendChild(dieSpan);
+                });
+
+                historyItem.appendChild(header);
+                historyItem.appendChild(resultsDiv);
+
+                if (roll.count > 1) {
+                    const totalDiv = document.createElement('div');
+                    totalDiv.className = 'history-item-total';
+                    totalDiv.textContent = `Total: ${roll.total}`;
+                    historyItem.appendChild(totalDiv);
+                }
+
+                historyList.appendChild(historyItem);
+            });
+        }
+
+        function clearHistory() {
+            if (rollHistory.length === 0) return;
+
+            if (confirm('Are you sure you want to clear the roll history?')) {
+                rollHistory = [];
+                updateHistoryDisplay();
+            }
         }
     </script>
 </body>
