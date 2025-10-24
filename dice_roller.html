@@ -367,6 +367,40 @@
             line-height: 1.4;
         }
 
+        .modifier-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .modifier-option label {
+            font-size: 1em;
+            color: #495057;
+            font-weight: 500;
+        }
+
+        .modifier-input {
+            padding: 8px 15px;
+            font-size: 1em;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            width: 100px;
+            text-align: center;
+        }
+
+        .modifier-input:focus {
+            outline: none;
+            border-color: #764ba2;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .modifier-hint {
+            font-size: 0.85em;
+            color: #6c757d;
+            margin-left: 10px;
+        }
+
         .exploded-indicator {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             color: white;
@@ -462,7 +496,10 @@
                     <input type="checkbox" id="explodingDice" name="explodingDice">
                     <label for="explodingDice">Exploding Dice (Open-Ended)</label>
                 </div>
-                <div class="option-description">
+                <div class="modifier-option">
+                    <label for="modifierInput">Modifier:</label>
+                    <input type="text" class="modifier-input" id="modifierInput" placeholder="e.g., +3, -2">
+                    <span class="modifier-hint">(Optional: +/- number)</span>
                 </div>
             </div>
 
@@ -583,8 +620,20 @@
             return { total, rolls };
         }
 
+        function parseModifier() {
+            const modifierText = document.getElementById('modifierInput').value.trim();
+            if (!modifierText) return 0;
+
+            const match = modifierText.match(/^([+\-]?\d+)$/);
+            if (match) {
+                return parseInt(match[1]);
+            }
+            return 0;
+        }
+
         function performRoll(sides, count) {
             const exploding = document.getElementById('explodingDice').checked;
+            const modifier = parseModifier();
             const results = [];
             const detailedResults = [];
 
@@ -600,11 +649,11 @@
                 }
             }
 
-            displayResults(sides, count, results, detailedResults, exploding);
-            addToHistory(sides, count, results, detailedResults, exploding);
+            displayResults(sides, count, results, detailedResults, exploding, modifier);
+            addToHistory(sides, count, results, detailedResults, exploding, modifier);
         }
 
-        function displayResults(sides, count, results, detailedResults, exploding) {
+        function displayResults(sides, count, results, detailedResults, exploding, modifier) {
             const resultsSection = document.getElementById('resultsSection');
             const rollTitle = document.getElementById('rollTitle');
             const rollInfo = document.getElementById('rollInfo');
@@ -612,7 +661,8 @@
             const totalDisplay = document.getElementById('totalDisplay');
 
             const modeText = exploding ? ' (Exploding)' : '';
-            rollTitle.textContent = `Rolling ${count}x D${sides}${modeText}`;
+            const modifierText = modifier !== 0 ? ` ${modifier > 0 ? '+' : ''}${modifier}` : '';
+            rollTitle.textContent = `Rolling ${count}x D${sides}${modeText}${modifierText}`;
             rollInfo.textContent = `Results:`;
 
             resultsList.innerHTML = '';
@@ -633,9 +683,20 @@
                 resultsList.appendChild(dieElement);
             });
 
-            if (count > 1) {
-                const total = results.reduce((sum, val) => sum + val, 0);
-                totalDisplay.textContent = `Total: ${total}`;
+            const diceTotal = results.reduce((sum, val) => sum + val, 0);
+            const finalTotal = diceTotal + modifier;
+
+            if (count > 1 || modifier !== 0) {
+                let totalText = '';
+                if (count > 1) {
+                    totalText = `Dice Total: ${diceTotal}`;
+                    if (modifier !== 0) {
+                        totalText += ` ${modifier > 0 ? '+' : ''}${modifier} = ${finalTotal}`;
+                    }
+                } else {
+                    totalText = `Total: ${results[0]} ${modifier > 0 ? '+' : ''}${modifier} = ${finalTotal}`;
+                }
+                totalDisplay.textContent = totalText;
                 totalDisplay.style.display = 'block';
             } else {
                 totalDisplay.style.display = 'none';
@@ -647,15 +708,18 @@
             }, 10);
         }
 
-        function addToHistory(sides, count, results, detailedResults, exploding) {
-            const total = results.reduce((sum, val) => sum + val, 0);
+        function addToHistory(sides, count, results, detailedResults, exploding, modifier) {
+            const diceTotal = results.reduce((sum, val) => sum + val, 0);
+            const finalTotal = diceTotal + modifier;
             rollHistory.unshift({
                 sides: sides,
                 count: count,
                 results: results,
                 detailedResults: detailedResults,
                 exploding: exploding,
-                total: total,
+                modifier: modifier,
+                diceTotal: diceTotal,
+                total: finalTotal,
                 timestamp: new Date()
             });
 
@@ -678,7 +742,8 @@
                 const header = document.createElement('div');
                 header.className = 'history-item-header';
                 const modeText = roll.exploding ? ' 💥' : '';
-                header.textContent = `${roll.count}x D${roll.sides}${modeText}`;
+                const modifierText = roll.modifier !== 0 ? ` ${roll.modifier > 0 ? '+' : ''}${roll.modifier}` : '';
+                header.textContent = `${roll.count}x D${roll.sides}${modeText}${modifierText}`;
 
                 const resultsDiv = document.createElement('div');
                 resultsDiv.className = 'history-item-results';
@@ -700,10 +765,16 @@
                 historyItem.appendChild(header);
                 historyItem.appendChild(resultsDiv);
 
-                if (roll.count > 1) {
+                if (roll.count > 1 || roll.modifier !== 0) {
                     const totalDiv = document.createElement('div');
                     totalDiv.className = 'history-item-total';
-                    totalDiv.textContent = `Total: ${roll.total}`;
+
+                    if (roll.modifier !== 0) {
+                        totalDiv.textContent = `Total: ${roll.diceTotal} ${roll.modifier > 0 ? '+' : ''}${roll.modifier} = ${roll.total}`;
+                    } else {
+                        totalDiv.textContent = `Total: ${roll.total}`;
+                    }
+
                     historyItem.appendChild(totalDiv);
                 }
 
